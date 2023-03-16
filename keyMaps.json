@@ -1,6 +1,9 @@
 {
-	"Chrome": {
-		"button9": "<Right>",
-		"button8": "<Left>"
+	"Logitech G304": {
+		"Chrome": {
+			"BTN_EXTRA": "<Right>",
+			"BTN_SIDE": "<Left>",
+			"BTN_FORWARD": "mute"
+		}
 	}
 }

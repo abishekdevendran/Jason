@@ -1,53 +1,71 @@
 import gi
+import json
+import evdev
+import threading
+
+devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
+mouse=None
+keyboard=None
+count=0
+for device in devices:
+	if "Logitech G304" in device.name:
+				print("Found mouse")
+				mouse=device
+				count+=1
+	if("gpio-keys" in device.name):
+				print("Found keyboard")
+				keyboard=device
+				count+=1
+	if(count==2):
+				break
+if mouse is None or keyboard is None:
+	print("Prerequisites not met")
+	exit()
+
+kb=evdev.UInput.from_device(keyboard)
+ms=evdev.UInput.from_device(mouse)
+
 gi.require_version('Gtk', '3.0')
 gi.require_version('Wnck', '3.0')
-from gi.repository import Gtk, Wnck
-from pynput import mouse
-from pynput.keyboard import Key, Controller, HotKey
-keyboard = Controller()
-# import keyMaps.json
-import json
-keyMaps=json.load(open('keyMaps.json'))
-currKey=None
+from gi.repository import Gtk, GLib, Wnck
+
+keyMaps = json.load(open('keyMaps.json'))
+currKey = None
 
 def onWindowChange(screen, prevScreen):
-	global currKey
-	try:
-			# check if any key in keyMaps is in the current window title, if yes set currKey to that key
-			for key in keyMaps.keys():
-				if key in screen.get_active_window().get_name():
-					currKey=key
-					return
-			# if currKey is not None, reset the key
-			currKey=None
-	except AttributeError:
-			pass
+    global currKey
+    if(screen.get_active_window() is None):
+        return
+    print(screen.get_active_window().get_name())
+    try:
+        for key in keyMaps.keys():
+            if key in screen.get_active_window().get_name():
+                currKey = key
+                return
+        currKey = None
+    except AttributeError:
+        pass
+#attach callback to screen
+screen = Wnck.Screen.get_default()
+screen.connect("active-window-changed", onWindowChange)
+screen.force_update()
 
+def readMouse():
+    mouse.grab()
+    for event in mouse.read_loop():
+        if event.type==evdev.ecodes.EV_KEY:
+            if event.code==evdev.ecodes.BTN_EXTRA and event.value==1:
+                kb.write(evdev.ecodes.EV_KEY, evdev.ecodes.KEY_UP, 1)
+                kb.write(evdev.ecodes.EV_KEY, evdev.ecodes.KEY_UP, 0)
+                kb.syn()
+            else:
+                ms.write_event(event)
+                ms.syn()
+        else:
+            ms.write_event(event)
+            ms.syn()
+    return True
 
-# def on_click(x, y, button, pressed):
-# 	global currKey
-# 	print("currKey: ",currKey)
-# 	if currKey is not None:
-# 		for key in keyMaps[currKey]:
-# 			if str(button.name) == key:
-# 				print(key,button.name)
-# 				# convert the key to a pynput key
-# 				temp = HotKey.parse(keyMaps[currKey][key])
-# 				for item in temp:
-# 					if pressed:
-# 						print("pressing: ",item)
-# 						keyboard.press(item)
-# 					else:
-# 						print("releasing: ",item)
-# 						keyboard.release(item)
-
-# ...or, in a non-blocking fashion:
-# listener = mouse.Listener(on_click=on_click)
-# listener.start()
-
-wnck_scr = Wnck.Screen.get_default()
-wnck_scr.force_update()
-wnck_scr.connect("active-window-changed", onWindowChange)
-
+mouse_thread = threading.Thread(target=readMouse)
+mouse_thread.start()
 Gtk.main()
-listener.join()
