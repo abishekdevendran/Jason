@@ -1,9 +1,9 @@
 {
 	"Logitech G304": {
 		"Chrome": {
-			"BTN_EXTRA": "<Right>",
-			"BTN_SIDE": "<Left>",
-			"BTN_FORWARD": "mute"
+			"BTN_EXTRA": "KEY_RIGHT",
+			"BTN_SIDE": "KEY_LEFT",
+			"BTN_FORWARD": "KEY_UP"
 		}
 	}
 }
