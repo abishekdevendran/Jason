@@ -31,7 +31,7 @@ gi.require_version('Gtk', '3.0')
 gi.require_version('Wnck', '3.0')
 from gi.repository import Gtk, Wnck
 
-keyMaps = json.load(open('keyMaps.json'))
+keyMaps = json.load(open('/mnt/sda1/GitHub/Jason/keyMaps.json'))
 currKey = None
 
 def onWindowChange(screen, prevScreen):
