@@ -4,6 +4,11 @@
 			"BTN_EXTRA": "KEY_RIGHT",
 			"BTN_SIDE": "KEY_LEFT",
 			"BTN_FORWARD": "KEY_UP"
+		},
+		"abishekdevendran@pop-os": {
+			"BTN_EXTRA": "KEY_A",
+			"BTN_SIDE": "KEY_B",
+			"BTN_FORWARD": "KEY_C"
 		}
 	}
 }

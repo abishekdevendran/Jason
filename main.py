@@ -29,7 +29,7 @@ ms=evdev.UInput.from_device(mouse)
 
 gi.require_version('Gtk', '3.0')
 gi.require_version('Wnck', '3.0')
-from gi.repository import Gtk, GLib, Wnck
+from gi.repository import Gtk, Wnck
 
 keyMaps = json.load(open('keyMaps.json'))
 currKey = None
