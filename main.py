@@ -7,19 +7,21 @@ devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
 mouse=None
 keyboard=None
 count=0
+terminateFlag=False
+
 for device in devices:
-	if "Logitech G304" in device.name:
+	if "Logitech G304" == device.name:
 				print("Found mouse")
 				print(device)
 				mouse=device
 				count+=1
-	if("gpio-keys" in device.name):
+	if("Dell KB216 Wired Keyboard" == device.name):
 				print("Found keyboard")
 				print(device)
 				keyboard=device
 				count+=1
-	if(count==2):
-				break
+	# if(count==2):
+	# 			break
 if mouse is None or keyboard is None:
 	print("Prerequisites not met")
 	exit()
@@ -33,6 +35,10 @@ from gi.repository import Gtk, Wnck
 
 keyMaps = json.load(open('/mnt/sda1/GitHub/Jason/keyMaps.json'))
 currKey = None
+
+def refreshKeymaps():
+	global keyMaps
+	keyMaps = json.load(open('/mnt/sda1/GitHub/Jason/keyMaps.json'))
 
 def onWindowChange(screen, prevScreen):
 	global currKey
@@ -77,9 +83,12 @@ def readMouse():
 	global ms
 	global kb
 	global mouse
+	global terminateFlag
 	mouse.grab()
 	try:
 		for event in mouse.read_loop():
+			if terminateFlag:
+				break
 			if event.type==evdev.ecodes.EV_KEY:
 				#if key is being held, do nothing
 				if event.value==2:
@@ -129,12 +138,46 @@ def readMouse():
 				ms.write(event.type, event.code, event.value)
 				ms.syn()
 	except:
-		mouse.ungrab()
 		print("Mouse disconnected")
-		exit()
-	mouse.ungrab()
+	finally:
+		mouse.ungrab()
+		ms.close()
+		kb.close()
+		Gtk.main_quit()
 	return 0
 
+def readKeyboard(): 
+	hotkey=["KEY_LEFTCTRL","KEY_LEFTALT","KEY_LEFTSHIFT","KEY_Q"]
+	refresh=["KEY_LEFTCTRL","KEY_LEFTALT","KEY_LEFTSHIFT","KEY_R"]
+	global keyboard
+	global terminateFlag
+	# check for a specific comination being held down: cltr+alt+shift+q
+	def mapper(keystr):
+		return getattr(evdev.ecodes, keystr)
+	hotkey = map(mapper, hotkey)
+	refresh = map(mapper, refresh)
+	setA = set(hotkey)
+	setB = set(refresh)
+	print(setA, setB)
+	# if so, set terminateFlag to true
+	for event in keyboard.read_loop():
+		if event.type == evdev.ecodes.EV_KEY:
+			if event.value == 2:
+				continue
+			# check if keyboard.active_keys() array has same elements as hotkey
+			temp = set(keyboard.active_keys())
+			print(temp, setB)
+			if setA.intersection(temp) == setA:
+				print("Exiting")
+				terminateFlag = True
+				break
+			elif setB.intersection(temp) == setB:
+				print("Refreshing")
+				refreshKeymaps()
+	return 0;
+
 mouse_thread = threading.Thread(target=readMouse)
+keyboard_thread = threading.Thread(target=readKeyboard)
 mouse_thread.start()
+keyboard_thread.start()
 Gtk.main()

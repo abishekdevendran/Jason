@@ -2,13 +2,16 @@
 	"Logitech G304": {
 		"Chrome": {
 			"BTN_EXTRA": "KEY_RIGHT",
-			"BTN_SIDE": "KEY_LEFT",
-			"BTN_FORWARD": "KEY_UP"
+			"BTN_SIDE": "KEY_LEFT"
 		},
 		"abishekdevendran@pop-os": {
 			"BTN_EXTRA": "KEY_A",
 			"BTN_SIDE": "KEY_B",
 			"BTN_FORWARD": "KEY_C"
+		},
+		"Genshin": {
+			"BTN_EXTRA": "KEY_E",
+			"BTN_SIDE": "KEY_Q"
 		}
 	}
 }
