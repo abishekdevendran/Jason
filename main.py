@@ -3,35 +3,38 @@ import json
 import evdev
 import threading
 
-devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
-mouse=None
-keyboard=None
-count=0
-terminateFlag=False
-
-for device in devices:
-	if "Logitech G304" == device.name:
-				print("Found mouse")
-				print(device)
-				mouse=device
-				count+=1
-	if("Dell KB216 Wired Keyboard" == device.name):
-				print("Found keyboard")
-				print(device)
-				keyboard=device
-				count+=1
-	# if(count==2):
-	# 			break
-if mouse is None or keyboard is None:
-	print("Prerequisites not met")
-	exit()
-
-kb=evdev.UInput.from_device(keyboard)
-ms=evdev.UInput.from_device(mouse)
-
 gi.require_version('Gtk', '3.0')
 gi.require_version('Wnck', '3.0')
 from gi.repository import Gtk, Wnck
+
+devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
+mouse=None
+keyboard=None
+kb=None
+ms=None
+terminateFlag=False
+
+def findDevices():
+	global keyboard
+	global mouse
+	global kb
+	global ms
+	count=0
+	for device in devices:
+		if "Logitech G304" == device.name:
+					print("Found mouse")
+					print(device)
+					mouse=device
+					count+=1
+		if("Dell KB216 Wired Keyboard" == device.name):
+					print("Found keyboard")
+					print(device)
+					keyboard=device
+					count+=1
+		if(count==2):
+					break
+	kb=evdev.UInput.from_device(keyboard)
+	ms=evdev.UInput.from_device(mouse)
 
 keyMaps = json.load(open('/mnt/sda1/GitHub/Jason/keyMaps.json'))
 currKey = None
@@ -174,8 +177,10 @@ def readKeyboard():
 			elif setB.intersection(temp) == setB:
 				print("Refreshing")
 				refreshKeymaps()
+				findDevices()
 	return 0;
 
+findDevices()
 mouse_thread = threading.Thread(target=readMouse)
 keyboard_thread = threading.Thread(target=readKeyboard)
 mouse_thread.start()

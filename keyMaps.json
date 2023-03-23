@@ -12,6 +12,10 @@
 		"Genshin": {
 			"BTN_EXTRA": "KEY_E",
 			"BTN_SIDE": "KEY_Q"
+		},
+		"Presenting": {
+			"BTN_EXTRA": "KEY_RIGHT",
+			"BTN_SIDE": "KEY_LEFT"
 		}
 	}
 }
