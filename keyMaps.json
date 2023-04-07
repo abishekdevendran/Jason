@@ -8,7 +8,7 @@
 		"abishekdevendran@abishek-msi": {
 			"BTN_EXTRA": "KEY_A",
 			"BTN_SIDE": "KEY_B",
-			"BTN_FORWARD": ["KEY_LEFTCTRL","KEY_LEFTALT","KEY_LEFTSHIFT","KEY_M"]
+			"BTN_FORWARD": ["KEY_LEFTCTRL", "KEY_LEFTALT", "KEY_LEFTSHIFT", "KEY_M"]
 		},
 		"Genshin": {
 			"BTN_EXTRA": "KEY_E",
@@ -24,6 +24,11 @@
 			"BTN_EXTRA": "KEY_V",
 			"BTN_SIDE": "KEY_E",
 			"BTN_MIDDLE": "KEY_X",
+			"BTN_FORWARD": ["KEY_LEFTCTRL", "KEY_LEFTALT", "KEY_LEFTSHIFT", "KEY_M"]
+		},
+		"Discord": {
+			"BTN_EXTRA": "KEY_RIGHT",
+			"BTN_SIDE": "KEY_LEFT",
 			"BTN_FORWARD": ["KEY_LEFTCTRL", "KEY_LEFTALT", "KEY_LEFTSHIFT", "KEY_M"]
 		}
 	}
