@@ -37,23 +37,23 @@ def findDevices():
 	ms=evdev.UInput.from_device(mouse)
 
 keyMaps = json.load(open('/mnt/sda1/GitHub/Jason/keyMaps.json'))
-currKey = None
+currWindow = None
 
 def refreshKeymaps():
 	global keyMaps
 	keyMaps = json.load(open('/mnt/sda1/GitHub/Jason/keyMaps.json'))
 
 def onWindowChange(screen, prevScreen):
-	global currKey
+	global currWindow
 	try:
 		print(screen.get_active_window().get_name())
 		for key in keyMaps[mouse.name].keys():
 			if key in screen.get_active_window().get_name():
-				currKey = key
+				currWindow = key
 				return
-		currKey = None
+		currWindow = None
 	except AttributeError:
-		currKey = None
+		currWindow = None
 		pass
 #attach callback to screen
 screen = Wnck.Screen.get_default()
@@ -82,7 +82,7 @@ def validate_key_maps(json_obj):
 validate_key_maps(keyMaps)
 
 def readMouse():
-	global currKey
+	global currWindow
 	global ms
 	global kb
 	global mouse
@@ -97,7 +97,7 @@ def readMouse():
 				if event.value==2:
 					continue
 				# check if key is mapped
-				if currKey is not None:
+				if currWindow is not None:
 					print(event)
 					# covert event code to key
 					temp = evdev.categorize(event)
@@ -105,32 +105,57 @@ def readMouse():
 					# if temp.heycode is an array
 					if isinstance(temp.keycode, list):
 						aSet = set(temp.keycode)
-						bSet = set(keyMaps[mouse.name][currKey].keys())
+						bSet = set(keyMaps[mouse.name][currWindow].keys())
 						# find intersection
 						isect = aSet.intersection(bSet)
 						if len(isect) > 0:
-							# rempap to keyMaps[mouse.name][currKey][isect[0]] on kb
-							# parsing to keycode
-							finalKey = getattr(evdev.ecodes, keyMaps[mouse.name][currKey][isect[0]])
-							if event.value == 1:
-								kb.write(evdev.ecodes.EV_KEY, finalKey, 1)
+							print("A");
+							# rempap to keyMaps[mouse.name][currWindow][isect[0]] on kb
+							# check if mapped value is an array
+							if isinstance(keyMaps[mouse.name][currWindow][isect[0]], list):
+								print("B");
+								for key in keyMaps[mouse.name][currWindow][isect[0]]:
+									print(key)
+									finalKey = getattr(evdev.ecodes, key)
+									if event.value == 1:
+										kb.write(evdev.ecodes.EV_KEY, finalKey, 1)
+									else:
+										kb.write(evdev.ecodes.EV_KEY, finalKey, 0)
 								kb.syn()
 							else:
-								kb.write(evdev.ecodes.EV_KEY, finalKey, 0)
-								kb.syn()
+								# parsing to keycode
+								finalKey = getattr(evdev.ecodes, keyMaps[mouse.name][currWindow][isect[0]])
+								if event.value == 1:
+									kb.write(evdev.ecodes.EV_KEY, finalKey, 1)
+									kb.syn()
+								else:
+									kb.write(evdev.ecodes.EV_KEY, finalKey, 0)
+									kb.syn()
 						else:
 							ms.write(event.type, event.code, event.value)
 							ms.syn()
 					else:
 						# check if key is mapped
-						if temp.keycode in keyMaps[mouse.name][currKey].keys():
-							finalKey = getattr(evdev.ecodes, keyMaps[mouse.name][currKey][temp.keycode])
-							if event.value == 1:
-								kb.write(evdev.ecodes.EV_KEY, finalKey, 1)
+						if temp.keycode in keyMaps[mouse.name][currWindow].keys():
+							# check if  mapped value is an array
+							if isinstance(keyMaps[mouse.name][currWindow][temp.keycode], list):
+								print("A2")
+								for key in keyMaps[mouse.name][currWindow][temp.keycode]:
+									print(key)
+									finalKey = getattr(evdev.ecodes, key)
+									if event.value == 1:
+										kb.write(evdev.ecodes.EV_KEY, finalKey, 1)
+									else:
+										kb.write(evdev.ecodes.EV_KEY, finalKey, 0)
 								kb.syn()
 							else:
-								kb.write(evdev.ecodes.EV_KEY, finalKey, 0)
-								kb.syn()
+								finalKey = getattr(evdev.ecodes, keyMaps[mouse.name][currWindow][temp.keycode])
+								if event.value == 1:
+									kb.write(evdev.ecodes.EV_KEY, finalKey, 1)
+									kb.syn()
+								else:
+									kb.write(evdev.ecodes.EV_KEY, finalKey, 0)
+									kb.syn()
 						else:
 							ms.write(event.type, event.code, event.value)
 							ms.syn()
@@ -140,8 +165,8 @@ def readMouse():
 			else:
 				ms.write(event.type, event.code, event.value)
 				ms.syn()
-	except:
-		print("Mouse disconnected")
+	except Exception as e:
+		print(e)
 	finally:
 		mouse.ungrab()
 		ms.close()

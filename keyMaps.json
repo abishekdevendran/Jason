@@ -2,20 +2,29 @@
 	"Logitech G304": {
 		"Chrome": {
 			"BTN_EXTRA": "KEY_RIGHT",
-			"BTN_SIDE": "KEY_LEFT"
+			"BTN_SIDE": "KEY_LEFT",
+			"BTN_FORWARD": ["KEY_LEFTCTRL", "KEY_LEFTALT", "KEY_LEFTSHIFT", "KEY_M"]
 		},
-		"abishekdevendran@pop-os": {
+		"abishekdevendran@abishek-msi": {
 			"BTN_EXTRA": "KEY_A",
 			"BTN_SIDE": "KEY_B",
-			"BTN_FORWARD": "KEY_C"
+			"BTN_FORWARD": ["KEY_LEFTCTRL","KEY_LEFTALT","KEY_LEFTSHIFT","KEY_M"]
 		},
 		"Genshin": {
 			"BTN_EXTRA": "KEY_E",
-			"BTN_SIDE": "KEY_Q"
+			"BTN_SIDE": "KEY_Q",
+			"BTN_FORWARD": ["KEY_LEFTCTRL", "KEY_LEFTALT", "KEY_LEFTSHIFT", "KEY_M"]
 		},
 		"Presenting": {
 			"BTN_EXTRA": "KEY_RIGHT",
-			"BTN_SIDE": "KEY_LEFT"
+			"BTN_SIDE": "KEY_LEFT",
+			"BTN_FORWARD": ["KEY_LEFTCTRL", "KEY_LEFTALT", "KEY_LEFTSHIFT", "KEY_M"]
+		},
+		"Overwatch": {
+			"BTN_EXTRA": "KEY_V",
+			"BTN_SIDE": "KEY_E",
+			"BTN_MIDDLE": "KEY_X",
+			"BTN_FORWARD": ["KEY_LEFTCTRL", "KEY_LEFTALT", "KEY_LEFTSHIFT", "KEY_M"]
 		}
 	}
 }
